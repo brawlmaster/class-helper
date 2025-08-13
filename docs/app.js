@@ -1,6 +1,7 @@
 /* Config */
 const APP_NAME = "1반 알림도우미";
 const API_BASE_URL = localStorage.getItem("apiBaseUrl") || ""; // same-origin by default
+const PUBLICVAPIDKEY = 'BMg93UzTisirwVpUQkwSKPn6fISgejXAtcBMEK_SypRTKN9x-0VPq6HEt3JIHRweKvzGIhFeU4YLY2lg7WY8LvQ';
 const MANAGER_PASSWORD = "sjsh11131118"; // 서버에서도 검증함
 
 /* Elements */
@@ -378,7 +379,7 @@ async function subscribePush() {
 
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(vapidKey)
+    applicationServerKey: urlBase64ToUint8Array(PUBLICVAPIDKEY)
   });
   await api('/api/subscribe', { method: 'POST', body: JSON.stringify(subscription) });
   alert('알림 신청 완료!');
