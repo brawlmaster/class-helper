@@ -3,7 +3,7 @@ const APP_NAME = "1반 알림도우미";
 const API_BASE_URL = localStorage.getItem("apiBaseUrl") || ""; // same-origin by default
 const PUBLICVAPIDKEY = 'BMg93UzTisirwVpUQkwSKPn6fISgejXAtcBMEK_SypRTKN9x-0VPq6HEt3JIHRweKvzGIhFeU4YLY2lg7WY8LvQ';
 const MANAGER_PASSWORD = "sjsh11131118"; // 서버에서도 검증함
-
+const API_BASE_URL = 'https://shortly-allowing-stinkbug.ngrok-free.app';
 /* Elements */
 const monthLabel = document.getElementById("monthLabel");
 const calendarGrid = document.getElementById("calendarGrid");
