@@ -441,7 +441,7 @@ function urlBase64ToUint8Array(base64String) {
   }
   await updateNotifyButtons();
 
-  window.addEventListener('focus, () => { loadAssignments().catch(()=>{}); });
+  window.addEventListener('focus', () => { loadAssignments().catch(()=>{}); });
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') loadAssignments().catch(()=>{});
   });
