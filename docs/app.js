@@ -55,9 +55,14 @@ function parseLocalInputValue(val) {
 /* API */
 async function api(path, options = {}) {
   const base = API_BASE_URL || `${location.origin}`;
-  const url = `${base}${path}`;
+  const method = (options.method || 'GET').toUpperCase();
+  let url = `${base}${path}`;
+  if (method === 'GET') {
+    const sep = url.includes('?') ? '&' : '?';
+    url = '${url}${sep}t=${Date.now()}';
   const res = await fetch(url, {
     headers: { 'Content-Type': 'application/json' },
+    cache: 'no-store',
     credentials: 'omit',
     ...options,
   });
@@ -436,3 +441,8 @@ function urlBase64ToUint8Array(base64String) {
   }
   await updateNotifyButtons();
 })();
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadAssignments().catch(()=>{});
+});
