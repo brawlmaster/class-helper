@@ -60,6 +60,7 @@ async function api(path, options = {}) {
   if (method === 'GET') {
     const sep = url.includes('?') ? '&' : '?';
     url = '${url}${sep}t=${Date.now()}';
+  }
   const res = await fetch(url, {
     headers: { 'Content-Type': 'application/json' },
     cache: 'no-store',
