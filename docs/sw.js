@@ -26,6 +26,7 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
   const isCore = PRECACHE_URLS.some(path => url.pathname.endsWith(path.replace('./','/')));
 
   if (isCore) {
