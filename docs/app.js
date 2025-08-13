@@ -439,4 +439,9 @@ function urlBase64ToUint8Array(base64String) {
     console.warn('일정을 불러오지 못했습니다. 서버가 필요합니다.', e);
   }
   await updateNotifyButtons();
+
+  window.addEventListener('focus, () => { loadAssignments().catch(()=>{}); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') loadAssignments().catch(()=>{});
+  });
 })();
