@@ -437,7 +437,7 @@ function urlBase64ToUint8Array(base64String) {
   try {
     await loadAssignments();
   } catch (e) {
-    console.warn('일정을 불러오지 못했습니다. 서버가 필요합니다.', e);
+    console.warn('load failed server required.', e);
   }
   await updateNotifyButtons();
 
