@@ -1,6 +1,6 @@
 /* Config */
 const APP_NAME = "1반 알림도우미";
-const API_BASE_URL = "https://shortly-allowing-stinkbug.ngrok-free.app"; // same-origin by default
+const API_BASE_URL = localStorage.getItem("apiBaseUrl") || ""; // same-origin by default
 const MANAGER_PASSWORD = "sjsh11131118"; // 서버에서도 검증함
 
 /* Elements */
@@ -302,7 +302,11 @@ managerModeBtn.addEventListener('click', () => {
     isManagerMode = true;
     managerModeBtn.textContent = '관리자 모드 해제';
   } else {
-    location.reload();
+    // 관리자 모드 해제 시: 서비스워커 해제 + 모든 캐시 삭제 + 강제 새로고침(캐시 무력화)
+    const hardReload = () => {
+      const u = new URL(location.href);
+      u.searchParams.set('r', Date.now().toString());
+      location.replace(u.toString());
     };
     try {
       const clearCaches = () => (self.caches ? caches.keys().then(names => Promise.all(names.map(n => caches.delete(n)))) : Promise.resolve());
