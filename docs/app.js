@@ -302,11 +302,7 @@ managerModeBtn.addEventListener('click', () => {
     isManagerMode = true;
     managerModeBtn.textContent = '관리자 모드 해제';
   } else {
-    // 관리자 모드 해제 시: 서비스워커 해제 + 모든 캐시 삭제 + 강제 새로고침(캐시 무력화)
-    const hardReload = () => {
-      const u = new URL(location.href);
-      u.searchParams.set('r', Date.now().toString());
-      location.replace(u.toString());
+    location.reload();
     };
     try {
       const clearCaches = () => (self.caches ? caches.keys().then(names => Promise.all(names.map(n => caches.delete(n)))) : Promise.resolve());
