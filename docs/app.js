@@ -1,6 +1,6 @@
 /* Config */
 const APP_NAME = "1반 알림도우미";
-const API_BASE_URL = "https://shortly-allowing-stinkbug.ngrok-free.app:8000"; // same-origin by default
+const API_BASE_URL = "https://shortly-allowing-stinkbug.ngrok-free.app"; // same-origin by default
 const MANAGER_PASSWORD = "sjsh11131118"; // 서버에서도 검증함
 
 /* Elements */
