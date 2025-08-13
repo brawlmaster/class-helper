@@ -1,5 +1,5 @@
+
 /* Config */
-const VAPID_PUBLIC_KEY = 'BMg93UzTisirwVpUQkwSKPn6fISgejXAtcBMEK_SypRTKN9x-0VPq6HEt3JIHRweKvzGIhFeU4YLY2lg7WY8LvQ';
 const APP_NAME = "1반 알림도우미";
 const API_BASE_URL = localStorage.getItem("apiBaseUrl") || ""; // same-origin by default
 const MANAGER_PASSWORD = "sjsh11131118"; // 서버에서도 검증함
@@ -11,7 +11,8 @@ const prevMonthBtn = document.getElementById("prevMonth");
 const nextMonthBtn = document.getElementById("nextMonth");
 const upcomingList = document.getElementById("upcomingList");
 const managerModeBtn = document.getElementById("managerModeBtn");
-const notifyToggleBtn = document.getElementById("notifyToggle");
+const notifySubscribeBtn = document.getElementById("notifySubscribe");
+const notifyUnsubscribeBtn = document.getElementById("notifyUnsubscribe");
 
 const eventDialog = document.getElementById("eventDialog");
 const eventForm = document.getElementById("eventForm");
@@ -48,9 +49,8 @@ function toLocalInputValue(date) {
   return local.toISOString().slice(0,16);
 }
 function parseLocalInputValue(val) {
-  const date = new Date(val);
-  const tzOffset = new Date().getTimezoneOffset();
-  return new Date(date.getTime() + tzOffset * 60000);
+  // datetime-local 값은 로컬 시간으로 해석되므로 추가 보정 없이 Date로 생성
+  return new Date(val);
 }
 
 /* API */
@@ -198,6 +198,9 @@ function render() {
   renderUpcoming();
 }
 
+// 서버 연결 실패 시에도 로컬에서 추가한 일정이 바로 보이도록(옵션)
+// 필요 시, 임시 캐시를 두고 서버 저장 실패 시 사용자에게 알림으로 안내하는 전략도 고려 가능
+
 /* Dialogs */
 function openCreateDialog(date) {
   dialogTitle.textContent = '일정 추가';
@@ -240,8 +243,10 @@ eventForm.addEventListener('submit', async (e) => {
   if (!payload.title) return;
   try {
     await saveAssignment(payload, Boolean(id));
+    // 최신 데이터 반영 전, 현재 월을 그대로 유지하며 즉시 렌더
     await loadAssignments();
     eventDialog.close();
+    alert('일정이 저장되었습니다.');
   } catch (err) {
     alert('저장 실패: ' + err.message);
   }
@@ -374,39 +379,40 @@ async function subscribePush() {
 
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+    applicationServerKey: urlBase64ToUint8Array(vapidKey)
   });
   await api('/api/subscribe', { method: 'POST', body: JSON.stringify(subscription) });
-  notifyToggleBtn.textContent = '알림 해제';
-  alert('알림을 구독했습니다.');
+  alert('알림 신청 완료!');
+  updateNotifyButtons();
 }
 
 async function unsubscribePush() {
   const registration = await navigator.serviceWorker.ready;
   const subscription = await registration.pushManager.getSubscription();
   if (!subscription) {
-    notifyToggleBtn.textContent = '알림 받기';
+    updateNotifyButtons();
     return;
   }
   await subscription.unsubscribe();
   await api('/api/unsubscribe', { method: 'POST', body: JSON.stringify(subscription) });
-  notifyToggleBtn.textContent = '알림 받기';
-  alert('알림 구독을 해제했습니다.');
+  alert('알림 취소 완료!');
+  updateNotifyButtons();
 }
 
-notifyToggleBtn.addEventListener('click', async () => {
-  if (notifyToggleBtn.textContent.includes('해제')) {
-    await unsubscribePush();
-  } else {
-    await subscribePush();
-  }
+notifySubscribeBtn.addEventListener('click', async () => {
+  await subscribePush();
+});
+notifyUnsubscribeBtn.addEventListener('click', async () => {
+  await unsubscribePush();
 });
 
-async function updateNotifyButton() {
+async function updateNotifyButtons() {
   if (!('serviceWorker' in navigator)) return;
   const registration = await navigator.serviceWorker.ready;
   const subscription = await registration.pushManager.getSubscription();
-  notifyToggleBtn.textContent = subscription ? '알림 해제' : '알림 받기';
+  const isOn = Boolean(subscription);
+  notifySubscribeBtn.hidden = isOn;
+  notifyUnsubscribeBtn.hidden = !isOn;
 }
 
 function urlBase64ToUint8Array(base64String) {
@@ -427,5 +433,5 @@ function urlBase64ToUint8Array(base64String) {
   } catch (e) {
     console.warn('일정을 불러오지 못했습니다. 서버가 필요합니다.', e);
   }
-  await updateNotifyButton();
+  await updateNotifyButtons();
 })();
