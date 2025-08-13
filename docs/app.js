@@ -441,8 +441,3 @@ function urlBase64ToUint8Array(base64String) {
   }
   await updateNotifyButtons();
 })();
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  loadAssignments().catch(()=>{});
-});
