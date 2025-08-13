@@ -1,4 +1,3 @@
-
 /* Config */
 const APP_NAME = "1반 알림도우미";
 const API_BASE_URL = localStorage.getItem("apiBaseUrl") || ""; // same-origin by default
@@ -408,11 +407,13 @@ notifyUnsubscribeBtn.addEventListener('click', async () => {
 
 async function updateNotifyButtons() {
   if (!('serviceWorker' in navigator)) return;
-  const registration = await navigator.serviceWorker.ready;
-  const subscription = await registration.pushManager.getSubscription();
+  const registration = await navigator.serviceWorker.ready.catch(() => null);
+  const subscription = await registration?.pushManager?.getSubscription?.();
   const isOn = Boolean(subscription);
-  notifySubscribeBtn.hidden = isOn;
-  notifyUnsubscribeBtn.hidden = !isOn;
+  notifySubscribeBtn?.classList?.toggle('hidden', isOn);
+  notifyUnsubscribeBtn?.classList?.toggle('hidden', !isOn);
+  if (notifySubscribeBtn) notifySubscribeBtn.hidden = isOn;
+  if (notifyUnsubscribeBtn) notifyUnsubscribeBtn.hidden = !isOn;
 }
 
 function urlBase64ToUint8Array(base64String) {
